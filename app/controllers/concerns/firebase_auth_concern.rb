@@ -23,19 +23,24 @@ module FirebaseAuthConcern
   end
 
   def create_user
-    user = User.create(
+    User.create(
       auth_id: firebase_user['user_id'],
       auth_provider: firebase_user['firebase']['sign_in_provider'],
       phone: firebase_user['phone_number'],
       name: firebase_user['name'],
-      email: firebase_user['email']
+      email: firebase_user['email'],
+      avatar: user_avatar
     )
+  end
 
-    if firebase_user['picture']
-      file = open(firebase_user['picture'])
-      user.avatar.attach(io: file, filename: user.auth_id, content_type: file.content_type)
-    end
+  def user_avatar
+    return unless firebase_user['picture']
 
-    user
+    file = open(firebase_user['picture'])
+    ActiveStorage::Blob.build_after_upload(
+      io: file,
+      filename: firebase_user['user_id'],
+      content_type: file.content_type
+    )
   end
 end
