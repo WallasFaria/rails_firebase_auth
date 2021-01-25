@@ -2,6 +2,8 @@
 require 'open-uri'
 
 module FirebaseAuthConcern
+  include ActionController::HttpAuthentication::Token::ControllerMethods
+
   protected
 
   def authenticate_user!
@@ -15,7 +17,9 @@ module FirebaseAuthConcern
   private
 
   def firebase_user
-    @firebase_user ||= FirebaseIdToken::Signature.verify(request.headers[:token])
+    authenticate_or_request_with_http_token do |token|
+      @firebase_user ||= FirebaseIdToken::Signature.verify(token)
+    end
   end
 
   def find_user
