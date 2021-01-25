@@ -17,7 +17,7 @@ module FirebaseAuthConcern
   private
 
   def firebase_user
-    authenticate_or_request_with_http_token do |token|
+    authenticate_with_http_token do |token|
       @firebase_user ||= FirebaseIdToken::Signature.verify(token)
     end
   end
