@@ -1,24 +1,87 @@
-# README
+# Rails Firebase Auth
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Exemplo de autenticação de api rails com Firebase
 
-Things you may want to cover:
+## Setup
 
-* Ruby version
+- Roda script de setup do rails
 
-* System dependencies
+  ```sh
+  bin/setup
+  ```
 
-* Configuration
+- Copia o arquivo `.env.template` para `.env`
 
-* Database creation
+  ```sh
+  cp .env.template .env
+  ```
 
-* Database initialization
+- Configura a variável de ambiente `FIREBASE_PROJECT_ID` no arquivo `.env`
 
-* How to run the test suite
+- Roda tarefa para gerar certificado do firebase
 
-* Services (job queues, cache servers, search engines, etc.)
+  ```sh
+  rails firebase:certificates:request
+  ```
 
-* Deployment instructions
+## Rodando o projeto
 
-* ...
+```sh
+rails s
+```
+
+## Usando authenticação
+
+Após o usuário criar conta ou autenticar com firebase no frontend web ou mobile, 
+basta fazer as requisições para api passando o token do firebase.
+
+Exemplo:
+
+__Get user profile__
+
+> GET /profile
+
+```sh
+curl -X GET 'http://localhost:3001/profile' -H 'Authorization: Bearer user-token'
+```
+
+retorno:
+```json
+{
+  "id": 1,
+  "name": "Wallas Faria da Silva",
+  "email": "user@email.com",
+  "phone": null,
+  "auth_id": "k5LWaAsas4544hhpl7ASIH9nm282",
+  "auth_provider": "google.com",
+  "created_at": "2021-01-25T00:51:41.055Z",
+  "updated_at": "2021-01-25T00:51:41.102Z",
+  "avatar_url": "http://localhost:3001/rails/active_storage/representations..."
+}
+```
+
+__Update user profile__
+
+> PUT /profile
+
+```sh
+curl -X PUT 'http://localhost:3001/profile' \
+     -H 'Authorization: Bearer user-token' \
+     -H 'Content-Type: application/json' \
+     -d '{ "phone": "+5522556644998" }'
+```
+
+retorno:
+```json
+{
+  "id": 1,
+  "phone": "+5522556644998",
+  "name": "Wallas Faria da Silva",
+  "email": "user@email.com",
+  "auth_id": "k5LWaAsas4544hhpl7ASIH9nm282",
+  "auth_provider": "google.com",
+  "created_at": "2021-01-25T00:51:41.055Z",
+  "updated_at": "2021-01-25T01:08:00.213Z",
+  "avatar_url": "http://localhost:3001/rails/active_storage/representations/..."
+}
+```
